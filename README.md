@@ -25,6 +25,57 @@ sourced from [Luke Barousse's SQL Course](https://lukebarousse.com/sql).
 - **Git & GitHub** — version control and project sharing
 - **VS Code** — SQL development and query execution
 
+## Database Schema
+
+A star-schema-style layout: one fact table (`job_postings_fact`) surrounded by
+dimension tables for companies and skills, linked through a bridge table for the
+many-to-many relationship between jobs and skills.
+
+```mermaid
+erDiagram
+    company_dim {
+        int company_id PK
+        text name
+        text link
+        text link_google
+        text thumbnail
+    }
+
+    skills_dim {
+        int skill_id PK
+        text skills
+        text type
+    }
+
+    job_postings_fact {
+        int job_id PK
+        int company_id FK
+        varchar job_title_short
+        text job_title
+        text job_location
+        text job_via
+        text job_schedule_type
+        boolean job_work_from_home
+        text search_location
+        timestamp job_posted_date
+        boolean job_no_degree_mention
+        boolean job_health_insurance
+        text job_country
+        text salary_rate
+        numeric salary_year_avg
+        numeric salary_hour_avg
+    }
+
+    skills_job_dim {
+        int job_id FK
+        int skill_id FK
+    }
+
+    company_dim ||--o{ job_postings_fact : "posts"
+    job_postings_fact ||--o{ skills_job_dim : "requires"
+    skills_dim ||--o{ skills_job_dim : "is required by"
+```
+
 ## The Analysis
 
 Each query in [`queries/`](queries/) targets a specific question about the Data Analyst
